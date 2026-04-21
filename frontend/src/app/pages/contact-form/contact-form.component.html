@@ -1,0 +1,110 @@
+<div class="form-layout">
+
+  <div class="back-bar">
+    <a [routerLink]="isEdit ? ['/contacts', contactId] : ['/']" class="back-btn">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5"/><polyline points="12 19 5 12 12 5"/></svg>
+      {{ isEdit ? 'Volver al contacto' : 'Todos los contactos' }}
+    </a>
+  </div>
+
+  <div class="form-card fade-up">
+
+    <div class="form-header">
+      <h1 class="form-title">{{ isEdit ? 'Editar contacto' : 'Nuevo contacto' }}</h1>
+      <p class="form-sub">{{ isEdit ? 'Modifica los datos del contacto' : 'Rellena los datos para añadir un nuevo contacto' }}</p>
+    </div>
+
+    <div *ngIf="loading()" class="state-center"><div class="spinner-ring"></div></div>
+
+    <div *ngIf="!loading()" class="form-body">
+
+      <div class="photo-section">
+        <div class="photo-preview">
+          <app-avatar [firstName]="form.first_name" [lastName]="form.last_name" [photoUrl]="form.photo_url || null" [size]="80"></app-avatar>
+          <div *ngIf="uploading()" class="photo-overlay"><div class="spinner-ring-sm"></div></div>
+        </div>
+        <div class="photo-actions">
+          <label class="btn btn-ghost btn-sm" for="photoInput">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            {{ form.photo_url ? 'Cambiar foto' : 'Subir foto' }}
+          </label>
+          <input id="photoInput" type="file" accept="image/*" class="file-input" (change)="onFileChange($event)">
+          <button *ngIf="form.photo_url" class="btn btn-ghost btn-sm" (click)="removePhoto()">Quitar foto</button>
+        </div>
+      </div>
+
+      <div class="fields-grid">
+
+        <div class="form-group">
+          <label class="form-label" for="first_name">Nombre *</label>
+          <input id="first_name" class="form-input" type="text" placeholder="Juan" [(ngModel)]="form.first_name" name="first_name">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="last_name">Apellidos *</label>
+          <input id="last_name" class="form-input" type="text" placeholder="García López" [(ngModel)]="form.last_name" name="last_name">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="email">Email</label>
+          <input id="email" class="form-input" type="email" placeholder="juan@ejemplo.com" [(ngModel)]="form.email" name="email">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="company">Empresa</label>
+          <input id="company" class="form-input" type="text" placeholder="Acme Corp" [(ngModel)]="form.company" name="company">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="phone">Teléfono principal</label>
+          <input id="phone" class="form-input" type="tel" placeholder="+34 600 000 000" [(ngModel)]="form.phone" name="phone">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="phone2">Teléfono secundario</label>
+          <input id="phone2" class="form-input" type="tel" placeholder="+34 911 000 000" [(ngModel)]="form.phone2" name="phone2">
+        </div>
+
+        <div class="form-group span-2">
+          <label class="form-label" for="address">Dirección</label>
+          <input id="address" class="form-input" type="text" placeholder="Calle Mayor 1, 2º A" [(ngModel)]="form.address" name="address">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="city">Ciudad</label>
+          <input id="city" class="form-input" type="text" placeholder="Madrid" [(ngModel)]="form.city" name="city">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="country">País</label>
+          <input id="country" class="form-input" type="text" placeholder="España" [(ngModel)]="form.country" name="country">
+        </div>
+
+        <div class="form-group span-2">
+          <label class="form-label" for="notes">Notas</label>
+          <textarea id="notes" class="form-input" placeholder="Información adicional sobre este contacto…" [(ngModel)]="form.notes" name="notes" rows="3"></textarea>
+        </div>
+
+        <div class="form-group span-2 fav-group">
+          <label class="fav-toggle">
+            <input type="checkbox" [(ngModel)]="form.is_favorite" name="is_favorite">
+            <span class="toggle-track">
+              <span class="toggle-thumb"></span>
+            </span>
+            <span class="toggle-label">Marcar como favorito</span>
+          </label>
+        </div>
+
+      </div>
+
+      <div class="form-footer">
+        <a [routerLink]="isEdit ? ['/contacts', contactId] : ['/']" class="btn btn-ghost">Cancelar</a>
+        <button class="btn btn-primary" (click)="save()" [disabled]="saving() || uploading()">
+          <span *ngIf="saving()" class="spinner-inline"></span>
+          {{ saving() ? 'Guardando…' : (isEdit ? 'Guardar cambios' : 'Crear contacto') }}
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>

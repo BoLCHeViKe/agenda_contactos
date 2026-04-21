@@ -1,0 +1,95 @@
+<div class="detail-layout">
+
+  <div class="back-bar">
+    <a routerLink="/" class="back-btn">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5"/><polyline points="12 19 5 12 12 5"/></svg>
+      Todos los contactos
+    </a>
+  </div>
+
+  <div *ngIf="isLoading()" class="state-center">
+    <div class="spinner-ring"></div>
+  </div>
+
+  <div *ngIf="contact() as c" class="detail-card fade-up">
+
+    <div class="hero">
+      <div class="hero-bg"></div>
+      <div class="hero-content">
+        <app-avatar [firstName]="c.first_name" [lastName]="c.last_name" [photoUrl]="getPhotoUrl(c.photo_url)" [size]="96"></app-avatar>
+        <div class="hero-info">
+          <div class="hero-name-row">
+            <h1>{{ c.first_name }} {{ c.last_name }}</h1>
+            <button class="fav-btn" [class.active]="c.is_favorite" (click)="toggleFavorite()" [title]="c.is_favorite ? 'Quitar favorito' : 'Marcar favorito'">
+              <svg width="18" height="18" viewBox="0 0 24 24" [attr.fill]="c.is_favorite ? 'currentColor' : 'none'" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            </button>
+          </div>
+          <p *ngIf="c.company" class="hero-company">{{ c.company }}</p>
+          <p *ngIf="c.city || c.country" class="hero-location">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            {{ getLocation(c) }}
+          </p>
+        </div>
+      </div>
+
+      <div class="hero-actions">
+        <a [routerLink]="['/contacts', c.id, 'edit']" class="btn btn-primary">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          Editar
+        </a>
+        <button class="btn btn-danger" (click)="showDel.set(true)">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+          Eliminar
+        </button>
+      </div>
+    </div>
+
+    <div class="info-grid">
+      <div *ngIf="c.email" class="info-item">
+        <span class="info-label">Email</span>
+        <a [href]="'mailto:' + c.email" class="info-value link">{{ c.email }}</a>
+      </div>
+      <div *ngIf="c.phone" class="info-item">
+        <span class="info-label">Teléfono principal</span>
+        <a [href]="'tel:' + c.phone" class="info-value link">{{ c.phone }}</a>
+      </div>
+      <div *ngIf="c.phone2" class="info-item">
+        <span class="info-label">Teléfono secundario</span>
+        <a [href]="'tel:' + c.phone2" class="info-value link">{{ c.phone2 }}</a>
+      </div>
+      <div *ngIf="c.address" class="info-item">
+        <span class="info-label">Dirección</span>
+        <span class="info-value">{{ c.address }}</span>
+      </div>
+      <div *ngIf="c.city" class="info-item">
+        <span class="info-label">Ciudad</span>
+        <span class="info-value">{{ c.city }}</span>
+      </div>
+      <div *ngIf="c.country" class="info-item">
+        <span class="info-label">País</span>
+        <span class="info-value">{{ c.country }}</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">Añadido</span>
+        <span class="info-value">{{ formatDate(c.created_at) }}</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">Actualizado</span>
+        <span class="info-value">{{ formatDate(c.updated_at) }}</span>
+      </div>
+    </div>
+
+    <div *ngIf="c.notes" class="notes-section">
+      <span class="info-label">Notas</span>
+      <p class="notes-text">{{ c.notes }}</p>
+    </div>
+
+  </div>
+</div>
+
+<app-confirm-dialog
+  [visible]="showDel()"
+  [name]="contactName"
+  (confirmed)="doDelete()"
+  (cancelled)="showDel.set(false)"
+></app-confirm-dialog>

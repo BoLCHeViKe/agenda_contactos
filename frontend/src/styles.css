@@ -1,0 +1,90 @@
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:           #0d0d12;
+  --bg2:          #15151e;
+  --bg3:          #1c1c28;
+  --surface:      #1a1a25;
+  --border:       #2a2a3d;
+  --border-hover: #3d3d58;
+  --accent:       #818cf8;
+  --accent2:      #a5b4fc;
+  --accent-dim:   rgba(129,140,248,0.15);
+  --accent-glow:  rgba(129,140,248,0.3);
+  --danger:       #f87171;
+  --danger-dim:   rgba(248,113,113,0.12);
+  --success:      #34d399;
+  --warning:      #fbbf24;
+  --text:         #eeeef5;
+  --text2:        #8888aa;
+  --text3:        #4a4a6a;
+  --radius:       14px;
+  --radius-sm:    8px;
+  --radius-xs:    5px;
+  --shadow:       0 8px 32px rgba(0,0,0,0.5);
+  --shadow-sm:    0 2px 8px rgba(0,0,0,0.3);
+  --font:         'DM Sans', sans-serif;
+  --font-head:    'Syne', sans-serif;
+  --t:            0.18s cubic-bezier(0.4,0,0.2,1);
+}
+
+html { font-size: 16px; scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  line-height: 1.6;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+/* Focus */
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+
+/* Animations */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.fade-up { animation: fadeUp 0.3s ease both; }
+.fade-in { animation: fadeIn 0.25s ease both; }
+
+/* Toast notifications */
+.toast-container {
+  position: fixed; top: 20px; right: 20px;
+  z-index: 9999; display: flex; flex-direction: column; gap: 10px;
+  pointer-events: none;
+}
+.toast {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 18px; border-radius: var(--radius-sm);
+  background: var(--bg3); border: 1px solid var(--border);
+  box-shadow: var(--shadow); pointer-events: all;
+  animation: fadeUp 0.25s ease both;
+  font-size: 0.875rem; min-width: 260px;
+}
+.toast.success { border-color: var(--success); }
+.toast.error   { border-color: var(--danger); }
+.toast-icon { font-size: 1.1rem; }
+
+/* Global button styles */
+button { cursor: pointer; font-family: var(--font); border: none; }
+a { color: inherit; text-decoration: none; }
+input, select, textarea { font-family: var(--font); }

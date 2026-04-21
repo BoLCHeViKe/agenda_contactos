@@ -1,0 +1,74 @@
+version: '3.9'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: agenda_mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root1234}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-agenda_db}
+      MYSQL_USER: ${MYSQL_USER:-agenda_user}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-agenda_pass}
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./mysql-init:/docker-entrypoint-initdb.d
+    ports:
+      - "3306:3306"
+    networks:
+      - agenda_net
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD:-root1234}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: agenda_backend
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 3001
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_NAME: ${MYSQL_DATABASE:-agenda_db}
+      DB_USER: ${MYSQL_USER:-agenda_user}
+      DB_PASSWORD: ${MYSQL_PASSWORD:-agenda_pass}
+      JWT_SECRET: ${JWT_SECRET:-supersecretkey_cambiar_en_produccion}
+      UPLOAD_DIR: /app/uploads
+    volumes:
+      - uploads_data:/app/uploads
+    ports:
+      - "3001:3001"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - agenda_net
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: ${VITE_API_URL:-http://localhost:3001}
+    container_name: agenda_frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - agenda_net
+
+volumes:
+  mysql_data:
+  uploads_data:
+
+networks:
+  agenda_net:
+    driver: bridge
